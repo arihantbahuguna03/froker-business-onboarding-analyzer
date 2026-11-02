@@ -1,6 +1,6 @@
 # Froker Business Onboarding Drop-off Analyzer
 
-Identifies the exact onboarding step where local businesses abandon the Froker platform, compares completers vs droppers, and outputs one actionable fix per drop-off point.
+Identifies the exact onboarding step where local businesses abandon the platform, compares completers vs droppers, and outputs one actionable fix per drop-off point.
 
 > Built Aug 2024 – Aug 2025 — pure Python + synthetic data. PM-focused analysis: not just where the drop is, but why and what to change.
 
@@ -8,7 +8,7 @@ Identifies the exact onboarding step where local businesses abandon the Froker p
 
 ## Problem
 
-Local businesses sign up on Froker to run creator campaigns, but most never post their first campaign. The team knew activation was low but didn't know **which step** was the problem — so every proposed fix was a guess.
+Local businesses sign up on the platform to run creator campaigns, but most never post their first campaign. The team knew activation was low but didn't know **which step** was the problem — so every proposed fix was a guess.
 
 ---
 
