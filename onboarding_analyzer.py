@@ -68,8 +68,11 @@ def _load_funnel_config() -> tuple[dict, dict, dict]:
         )
 
 
+_STAGE_CONVERSION_RATES, _COMPLETER_TIME, FIX_RECOMMENDATIONS = _load_funnel_config()
+
+
 def make_businesses():
-    rates, times, _ = _load_funnel_config()
+    rates, times = _STAGE_CONVERSION_RATES, _COMPLETER_TIME
     base = datetime(2024, 9, 1)
     businesses = []
     n = 150
@@ -120,24 +123,6 @@ STEP_COLUMNS = {
     "creator_selection": ("creator_selected_ts",  "brief_done_ts"),
     "campaign_live":     ("campaign_live_ts",     "creator_selected_ts"),
 }
-
-def _get_fix_recommendations() -> dict:
-    """
-    Load fix recommendations from funnel_config.py.
-    Based on root-cause analysis of step-level dropout patterns — proprietary PM analysis.
-    Implementation: proprietary — available on request.
-    """
-    try:
-        import funnel_config
-        return funnel_config.FIX_RECOMMENDATIONS
-    except ImportError:
-        raise RuntimeError(
-            "funnel_config.py not found. "
-            "Copy funnel_config.example.py → funnel_config.py and fill in your values."
-        )
-
-FIX_RECOMMENDATIONS = _get_fix_recommendations()
-
 
 def run_analysis() -> None:
     print("\n" + "="*65)
