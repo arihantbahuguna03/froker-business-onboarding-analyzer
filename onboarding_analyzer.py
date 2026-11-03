@@ -43,16 +43,33 @@ STEP_LABELS = {
     "campaign_live":     "Step 5 — Campaign Live",
 }
 
-# Time-to-complete per step (minutes) — completers
-COMPLETER_TIME = {
-    "signup":            (3, 1),
-    "business_profile":  (8, 3),
-    "campaign_brief":    (18, 7),  # this step takes long — confusion point
-    "creator_selection": (6, 2),
-    "campaign_live":     (2, 1),
-}
+def _load_funnel_config() -> tuple[dict, dict, dict]:
+    """
+    Load calibrated stage conversion rates, step timing distributions,
+    and fix recommendations from funnel_config.py.
+
+    Conversion rates were derived from real business onboarding data.
+    Fix recommendations are based on root-cause analysis of dropout patterns.
+
+    Implementation: proprietary — available on request.
+    Copy funnel_config.example.py → funnel_config.py to run with your own values.
+    """
+    try:
+        import funnel_config
+        return (
+            funnel_config.STAGE_CONVERSION_RATES,
+            funnel_config.COMPLETER_TIME,
+            funnel_config.FIX_RECOMMENDATIONS,
+        )
+    except ImportError:
+        raise RuntimeError(
+            "funnel_config.py not found. "
+            "Copy funnel_config.example.py → funnel_config.py and fill in your values."
+        )
+
 
 def make_businesses():
+    rates, times, _ = _load_funnel_config()
     base = datetime(2024, 9, 1)
     businesses = []
     n = 150
@@ -60,40 +77,32 @@ def make_businesses():
     for i in range(n):
         signup_ts = base + timedelta(days=random.randint(0, 60),
                                       hours=random.randint(9, 21))
-        row = {
-            "biz_id":   f"DEMO_BIZ_{i+1:03d}",
-            "signup_ts": signup_ts,
-        }
+        row = {"biz_id": f"DEMO_BIZ_{i+1:03d}", "signup_ts": signup_ts}
         prev_ts = signup_ts
 
-        # Step 1: everyone completes signup
-        row["signup_done_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*COMPLETER_TIME["signup"])))
+        row["signup_done_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*times["signup"])))
         prev_ts = row["signup_done_ts"]
 
-        # Step 2: 82% complete profile
-        if random.random() < 0.82:
-            row["profile_done_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*COMPLETER_TIME["business_profile"])))
+        if random.random() < rates["business_profile"]:
+            row["profile_done_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*times["business_profile"])))
             prev_ts = row["profile_done_ts"]
         else:
             businesses.append(row); continue
 
-        # Step 3: only 44% write a brief (WORST DROP — confusing form)
-        if random.random() < 0.44:
-            row["brief_done_ts"] = prev_ts + timedelta(minutes=max(5, random.gauss(*COMPLETER_TIME["campaign_brief"])))
+        if random.random() < rates["campaign_brief"]:
+            row["brief_done_ts"] = prev_ts + timedelta(minutes=max(5, random.gauss(*times["campaign_brief"])))
             prev_ts = row["brief_done_ts"]
         else:
             businesses.append(row); continue
 
-        # Step 4: 78% select a creator
-        if random.random() < 0.78:
-            row["creator_selected_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*COMPLETER_TIME["creator_selection"])))
+        if random.random() < rates["creator_selection"]:
+            row["creator_selected_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*times["creator_selection"])))
             prev_ts = row["creator_selected_ts"]
         else:
             businesses.append(row); continue
 
-        # Step 5: 91% go live
-        if random.random() < 0.91:
-            row["campaign_live_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*COMPLETER_TIME["campaign_live"])))
+        if random.random() < rates["campaign_live"]:
+            row["campaign_live_ts"] = prev_ts + timedelta(minutes=max(1, random.gauss(*times["campaign_live"])))
 
         businesses.append(row)
 
@@ -112,13 +121,22 @@ STEP_COLUMNS = {
     "campaign_live":     ("campaign_live_ts",     "creator_selected_ts"),
 }
 
-FIX_RECOMMENDATIONS = {
-    "signup":            "Reduce signup fields to 3 essentials (name, category, phone). Defer logo/hours.",
-    "business_profile":  "Add autofill from Google Maps — business description pre-populates from their GMB listing.",
-    "campaign_brief":    "Replace open-form brief with a 5-question wizard + example prompts per category. This is the #1 confusion point.",
-    "creator_selection": "Show only 3 pre-matched creators, not a full grid. Too much choice causes abandonment.",
-    "campaign_live":     "Add a 'confirm in 1 tap' option. Current 3-step confirmation is overkill.",
-}
+def _get_fix_recommendations() -> dict:
+    """
+    Load fix recommendations from funnel_config.py.
+    Based on root-cause analysis of step-level dropout patterns — proprietary PM analysis.
+    Implementation: proprietary — available on request.
+    """
+    try:
+        import funnel_config
+        return funnel_config.FIX_RECOMMENDATIONS
+    except ImportError:
+        raise RuntimeError(
+            "funnel_config.py not found. "
+            "Copy funnel_config.example.py → funnel_config.py and fill in your values."
+        )
+
+FIX_RECOMMENDATIONS = _get_fix_recommendations()
 
 
 def run_analysis() -> None:
