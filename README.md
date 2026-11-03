@@ -1,4 +1,4 @@
-# Froker Business Onboarding Drop-off Analyzer
+# Business Onboarding Drop-off Analyzer
 
 Identifies the exact onboarding step where local businesses abandon the platform, compares completers vs droppers, and outputs one actionable fix per drop-off point.
 

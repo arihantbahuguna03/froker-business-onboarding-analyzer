@@ -1,6 +1,6 @@
 """
-Froker Business Onboarding Drop-off Analyzer
-=============================================
+Creator Marketplace — Business Onboarding Drop-off Analyzer
+=============================================================
 Identifies the exact onboarding step where local businesses abandon
 the flow, compares completers vs droppers, and outputs one fix per step.
 
@@ -123,7 +123,7 @@ FIX_RECOMMENDATIONS = {
 
 def run_analysis() -> None:
     print("\n" + "="*65)
-    print("  FROKER BUSINESS ONBOARDING FUNNEL ANALYSIS")
+    print("  CREATOR MARKETPLACE — BUSINESS ONBOARDING FUNNEL")
     print("="*65 + "\n")
 
     total = len(DEMO_BUSINESSES)
